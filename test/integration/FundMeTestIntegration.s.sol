@@ -26,6 +26,9 @@ contract InteractionsTest is Test {
         uint256 preUserBalance = address(alice).balance;
         uint256 preOwnerBalance = address(fundMe.getOwner()).balance;
 
+        console.log("USER starting balance is: ", preUserBalance);
+        console.log("OWNER starting balance is: ", preOwnerBalance);
+
         // Using vm.prank to simulate funding from the USER address
         vm.prank(alice);
         fundMe.fund{value: SEND_VALUE}();
@@ -33,11 +36,21 @@ contract InteractionsTest is Test {
         address funder = fundMe.getFunder(0);
         assertEq(funder, alice);
 
+        console.log("Contract balance afer FUND is: ", address(fundMe).balance);
+
         WithdrawFundMe withdrawFundMe = new WithdrawFundMe();
         withdrawFundMe.withdrawFundMe(address(fundMe));
 
         uint256 afterUserBalance = address(alice).balance;
         uint256 afterOwnerBalance = address(fundMe.getOwner()).balance;
+
+        console.log(
+            "Contract balance afer WITHDRAW is: ",
+            address(fundMe).balance
+        );
+
+        console.log("USER ending balance is: ", afterUserBalance);
+        console.log("OWNER ending balance is: ", afterOwnerBalance);
 
         assert(address(fundMe).balance == 0);
         assertEq(afterUserBalance + SEND_VALUE, preUserBalance);
